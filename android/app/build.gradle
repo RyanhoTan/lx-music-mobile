@@ -110,7 +110,7 @@ android {
 
     namespace "cn.toside.music.mobile"
     defaultConfig {
-        applicationId "cn.toside.music.mobile"
+        applicationId "cn.toside.music.mobile.debug"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode verCode
@@ -127,13 +127,13 @@ android {
     }
     signingConfigs {
         release {
+            def keystorePropertiesFile = rootProject.file("keystore.properties")
             if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
                 storeFile file(MYAPP_UPLOAD_STORE_FILE)
                 storePassword MYAPP_UPLOAD_STORE_PASSWORD
                 keyAlias MYAPP_UPLOAD_KEY_ALIAS
                 keyPassword MYAPP_UPLOAD_KEY_PASSWORD
-            } else {
-                def keystorePropertiesFile = rootProject.file("keystore.properties")
+            } else if (keystorePropertiesFile.exists()) {
                 def keystoreProperties = new Properties()
                 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
