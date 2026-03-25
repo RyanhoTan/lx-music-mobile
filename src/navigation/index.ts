@@ -7,10 +7,16 @@ import { removeComponentId } from '@/core/common'
 import { onAppLaunched } from './regLaunchedEvent'
 
 let unRegisterEvent: ReturnType<ReturnType<typeof Navigation.events>['registerScreenPoppedListener']>
+let isScreensRegistered = false
+
+const ensureNavigationRegistered = () => {
+  if (isScreensRegistered) return
+  registerScreens()
+  isScreensRegistered = true
+}
 
 const init = (callback: () => void | Promise<void>) => {
-  // Register all screens on launch
-  registerScreens()
+  ensureNavigationRegistered()
 
   if (unRegisterEvent) unRegisterEvent.remove()
 
@@ -35,6 +41,7 @@ export * from './event'
 export * from './hooks'
 
 export {
+  ensureNavigationRegistered,
   init,
   screenNames,
   navigations,

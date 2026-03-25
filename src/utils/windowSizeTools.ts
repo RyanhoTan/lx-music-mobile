@@ -3,6 +3,13 @@ import { getWindowSize as getWindowSizeRaw } from './nativeModules/utils'
 // import { log } from './log'
 
 export type SizeHandler = (size: { width: number, height: number }) => void
+const getFallbackSize = () => {
+  const window = Dimensions.get('window')
+  return {
+    width: Math.round(window.width),
+    height: Math.round(window.height) + (StatusBar.currentHeight ?? 0),
+  }
+}
 export const getWindowSize = async() => {
   return getWindowSizeRaw().then((size) => {
     const scale = Dimensions.get('window').scale
@@ -13,10 +20,7 @@ export const getWindowSize = async() => {
 }
 
 export const windowSizeTools = {
-  size: {
-    width: 0,
-    height: 0,
-  },
+  size: getFallbackSize(),
   listeners: [] as SizeHandler[],
   getSize() {
     return this.size
@@ -44,13 +48,9 @@ export const windowSizeTools = {
     if (size.width) {
       this.size = size
     } else {
-      const window = Dimensions.get('window')
-      // log.info('Dimensions window size', window)
-      this.size = {
-        width: Math.round(window.width),
-        height: Math.round(window.height) + (StatusBar.currentHeight ?? 0),
-      }
+      this.size = getFallbackSize()
     }
+    for (const handler of this.listeners) handler(this.size)
     // console.log('init windowSizeTools')
     return size
   },

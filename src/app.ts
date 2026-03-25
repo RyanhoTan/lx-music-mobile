@@ -8,6 +8,11 @@ import { windowSizeTools } from './utils/windowSizeTools'
 import { listenLaunchEvent } from './navigation/regLaunchedEvent'
 import { tipDialog } from './utils/tools'
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { ensureNavigationRegistered }: { ensureNavigationRegistered: () => void } = require('./navigation')
+
+ensureNavigationRegistered()
+
 console.log('starting app...')
 listenLaunchEvent()
 
