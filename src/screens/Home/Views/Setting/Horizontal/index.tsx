@@ -17,12 +17,18 @@ const styles = createStyle({
     width: '22%',
     borderRightWidth: BorderWidths.normal,
   },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
   main: {
     paddingLeft: 15,
     paddingRight: 15,
     paddingTop: 15,
     paddingBottom: 15,
-    flex: 0,
+    flexGrow: 1,
   },
 })
 
@@ -35,7 +41,7 @@ export default () => {
       <View style={{ ...styles.nav, borderRightColor: theme['c-border-background'] }}>
         <NavList onChangeId={(id) => mainRef.current?.setActiveId(id)} />
       </View>
-      <ScrollView keyboardShouldPersistTaps={'always'}>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps={'always'}>
         <View style={styles.main}>
           <Main ref={mainRef} />
         </View>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { View } from 'react-native'
 import Search from '../Views/Search'
 import SongList from '../Views/SongList'
 import Mylist from '../Views/Mylist'
@@ -6,6 +7,7 @@ import History from '../Views/History'
 import Leaderboard from '../Views/Leaderboard'
 import Setting from '../Views/Setting'
 import commonState, { type InitState as CommonState } from '@/store/common/state'
+import { createStyle } from '@/utils/tools'
 
 
 const Main = () => {
@@ -35,9 +37,19 @@ const Main = () => {
     }
   }, [id])
 
-  return component
+  return (
+    <View style={styles.container}>
+      {component}
+    </View>
+  )
 }
 
+const styles = createStyle({
+  container: {
+    flex: 1,
+    overflow: 'hidden',
+  },
+})
 
 export default Main
 
