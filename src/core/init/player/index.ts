@@ -17,5 +17,5 @@ export default async(setting: LX.AppSetting) => {
   initWatchList()
   initPlayProgress()
   initPreloadNextMusic()
-  initHistory()
+  await initHistory()
 }

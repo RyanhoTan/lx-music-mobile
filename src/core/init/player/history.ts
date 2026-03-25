@@ -1,11 +1,13 @@
-import { addHistoryMusic } from '@/core/history'
+import { applyPendingHistoryList, savePendingHistoryMusic } from '@/core/history'
 import playerState from '@/store/player/state'
 
-export default () => {
+export default async() => {
+  await applyPendingHistoryList()
+
   const handleMusicToggle = () => {
     const musicInfo = playerState.playMusicInfo.musicInfo
     if (!musicInfo) return
-    void addHistoryMusic(musicInfo)
+    void savePendingHistoryMusic(musicInfo)
   }
 
   global.app_event.on('musicToggled', handleMusicToggle)

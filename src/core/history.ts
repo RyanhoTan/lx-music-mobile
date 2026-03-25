@@ -1,5 +1,6 @@
-import { LIST_IDS } from '@/config/constant'
+import { LIST_IDS, storageDataPrefix } from '@/config/constant'
 import { clearListMusics, getListMusics, overwriteListMusics } from '@/core/list'
+import { getData, removeData, saveData } from '@/plugins/storage'
 
 const getHistoryTextMap = () => ({
   name: {
@@ -48,4 +49,21 @@ export const addHistoryMusic = async(musicInfo: LX.Music.MusicInfo | LX.Download
 
 export const clearHistoryList = async() => {
   await clearListMusics([LIST_IDS.HISTORY])
+}
+
+export const savePendingHistoryMusic = async(musicInfo: LX.Music.MusicInfo | LX.Download.ListItem) => {
+  const historyMusic = normalizeHistoryMusicInfo(musicInfo)
+  const pendingHistoryList = await getData<LX.Music.MusicInfo[]>(storageDataPrefix.pendingHistoryList) ?? []
+  pendingHistoryList.push(historyMusic)
+  await saveData(storageDataPrefix.pendingHistoryList, pendingHistoryList)
+}
+
+export const applyPendingHistoryList = async() => {
+  const pendingHistoryList = await getData<LX.Music.MusicInfo[]>(storageDataPrefix.pendingHistoryList)
+  if (!pendingHistoryList?.length) return
+
+  for (const musicInfo of pendingHistoryList) {
+    await addHistoryMusic(musicInfo)
+  }
+  await removeData(storageDataPrefix.pendingHistoryList)
 }

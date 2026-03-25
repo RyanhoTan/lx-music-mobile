@@ -62,6 +62,7 @@ export const storageDataPrefix = {
   ignoringBatteryOptimizationTipEnable: '@ignoring_battery_optimization_tip_enable',
 
   searchHistoryList: '@search_history_list',
+  pendingHistoryList: '@pending_history_list',
   listUpdateInfo: '@list_update_info',
   ignoreVersion: '@ignore_version',
   ignoreVersionFailTipTimeKey: '@ignore_version_fail_tip_time',
