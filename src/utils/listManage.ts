@@ -66,6 +66,7 @@ const updateList = ({
   switch (id) {
     case LIST_IDS.DEFAULT:
     case LIST_IDS.LOVE:
+    case LIST_IDS.HISTORY:
       break
     case LIST_IDS.TEMP:
     //   tempList.meta = meta ?? {}

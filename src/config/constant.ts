@@ -10,6 +10,7 @@ export const SPLIT_CHAR = {
 export const LIST_IDS = {
   DEFAULT: 'default',
   LOVE: 'love',
+  HISTORY: 'history',
   TEMP: 'temp',
   DOWNLOAD: 'download',
   PLAY_LATER: null,
@@ -103,6 +104,7 @@ export const NAV_MENUS = [
   { id: 'nav_songlist', icon: 'album' },
   { id: 'nav_top', icon: 'leaderboard' },
   { id: 'nav_love', icon: 'love' },
+  { id: 'nav_history', icon: 'back-2' },
   // { id: 'download', icon: 'download-2' },
   { id: 'nav_setting', icon: 'setting' },
 ] as const

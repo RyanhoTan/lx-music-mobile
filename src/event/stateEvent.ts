@@ -79,7 +79,7 @@ export class StateEvent extends Event {
   /**
    * 我的列表更新
    */
-  mylistUpdated(lists: Array<LX.List.MyDefaultListInfo | LX.List.MyLoveListInfo | LX.List.UserListInfo>) {
+  mylistUpdated(lists: LX.List.MyListInfo[]) {
     this.emit('mylistUpdated', lists)
   }
 

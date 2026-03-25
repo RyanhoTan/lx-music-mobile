@@ -1,18 +1,28 @@
 import { useEffect, useState } from 'react'
 import state, { type InitState } from './state'
 import { getListMusics } from '@/core/list'
+import { LIST_IDS } from '@/config/constant'
+import { getHistoryListName } from '@/core/history'
+
+const setBuiltinListNames = (lists: LX.List.MyListInfo[]) => {
+  const defaultList = lists.find(list => list.id === LIST_IDS.DEFAULT)
+  const loveList = lists.find(list => list.id === LIST_IDS.LOVE)
+  const historyList = lists.find(list => list.id === LIST_IDS.HISTORY)
+
+  if (defaultList) defaultList.name = global.i18n.t('list_name_default')
+  if (loveList) loveList.name = global.i18n.t('list_name_love')
+  if (historyList) historyList.name = getHistoryListName()
+}
 
 export const useMyList = () => {
   const [lists, setList] = useState(state.allList)
-  lists[0].name = global.i18n.t('list_name_default')
-  lists[1].name = global.i18n.t('list_name_love')
+  setBuiltinListNames(lists)
 
   useEffect(() => {
     const handleConfigUpdate = (keys: Array<keyof LX.AppSetting>) => {
       if (!keys.includes('common.langId')) return
       setList((lists) => {
-        lists[0].name = global.i18n.t('list_name_default')
-        lists[1].name = global.i18n.t('list_name_love')
+        setBuiltinListNames(lists)
         return [...lists]
       })
     }

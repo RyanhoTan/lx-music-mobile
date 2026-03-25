@@ -16,6 +16,7 @@ export interface SelectInfo {
 const initSelectInfo = {}
 
 const menuItemWidth = scaleSizeW(110)
+const BUILTIN_LIST_COUNT = 2
 
 
 export interface ListMenuProps {
@@ -73,10 +74,19 @@ export default forwardRef<ListMenuType, ListMenuProps>(({
     let sync = false
     let remove = false
     let local_file = !listState.fetchingListStatus[listInfo.id]
+    let sort = true
+    let duplicateMusic = true
+    let importExport = true
     let userList: LX.List.UserListInfo
     switch (listInfo.id) {
       case LIST_IDS.DEFAULT:
       case LIST_IDS.LOVE:
+        break
+      case LIST_IDS.HISTORY:
+        local_file = false
+        sort = false
+        duplicateMusic = false
+        importExport = false
         break
       default:
         userList = listInfo as LX.List.UserListInfo
@@ -89,12 +99,12 @@ export default forwardRef<ListMenuType, ListMenuProps>(({
     setMenus([
       { action: 'new', label: t('list_create') },
       { action: 'rename', disabled: !rename, label: t('list_rename') },
-      { action: 'sort', label: t('list_sort') },
-      { action: 'duplicateMusic', label: t('lists__duplicate') },
+      { action: 'sort', disabled: !sort, label: t('list_sort') },
+      { action: 'duplicateMusic', disabled: !duplicateMusic, label: t('lists__duplicate') },
       { action: 'local_file', disabled: !local_file, label: t('list_select_local_file') },
       { action: 'sync', disabled: !sync || !local_file, label: t('list_sync') },
-      { action: 'import', label: t('list_import') },
-      { action: 'export', label: t('list_export') },
+      { action: 'import', disabled: !importExport, label: t('list_import') },
+      { action: 'export', disabled: !importExport, label: t('list_export') },
       // { action: 'changePosition', label: t('change_position') },
       { action: 'remove', disabled: !remove, label: t('list_remove') },
     ])
@@ -104,7 +114,7 @@ export default forwardRef<ListMenuType, ListMenuProps>(({
     const selectInfo = selectInfoRef.current
     switch (action) {
       case 'new':
-        onNew(Math.max(selectInfo.index - 1, 0))
+        onNew(Math.max(selectInfo.index - (BUILTIN_LIST_COUNT - 1), 0))
         break
       case 'rename':
         onRename(selectInfo.listInfo as LX.List.UserListInfo)

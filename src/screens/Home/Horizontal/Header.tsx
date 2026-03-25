@@ -12,9 +12,14 @@ import { scaleSizeH } from '@/utils/pixelRatio'
 import { HEADER_HEIGHT as _HEADER_HEIGHT } from '@/config/constant'
 import { type InitState as CommonState } from '@/store/common/state'
 import SearchTypeSelector from '@/screens/Home/Views/Search/SearchTypeSelector'
+import { getHistoryListName } from '@/core/history'
 
 const headerComponents: Partial<Record<CommonState['navActiveId'], React.ReactNode>> = {
   nav_search: <SearchTypeSelector />,
+}
+
+const getTitle = (id: CommonState['navActiveId'], t: ReturnType<typeof useI18n>) => {
+  return id == 'nav_history' ? getHistoryListName() : t(id)
 }
 
 const HEADER_HEIGHT = _HEADER_HEIGHT * 0.8
@@ -38,7 +43,7 @@ const LeftHeader = () => {
       paddingTop: statusBarHeight,
     }}>
       <View style={styles.left}>
-        <Text style={styles.leftTitle} size={18}>{t(id)}</Text>
+        <Text style={styles.leftTitle} size={18}>{getTitle(id, t)}</Text>
       </View>
       {headerComponents[id] ?? null}
 
@@ -68,7 +73,7 @@ const RightHeader = () => {
       paddingTop: statusBarHeight,
     }}>
       <View style={styles.left}>
-        <Text style={styles.rightTitle} size={18}>{t(id)}</Text>
+        <Text style={styles.rightTitle} size={18}>{getTitle(id, t)}</Text>
       </View>
       {headerComponents[id] ?? null}
       {/* <TouchableOpacity style={styles.btn} onPress={openSetting}>

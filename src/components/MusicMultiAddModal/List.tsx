@@ -10,6 +10,7 @@ import { useTheme } from '@/store/theme/hook'
 import { useI18n } from '@/lang'
 import { createStyle } from '@/utils/tools'
 import { scaleSizeW } from '@/utils/pixelRatio'
+import { LIST_IDS } from '@/config/constant'
 
 const styles = createStyle({
   list: {
@@ -53,7 +54,7 @@ export default ({ listId, onPress }: {
   onPress: (listInfo: LX.List.MyListInfo) => void
 }) => {
   const windowSize = useWindowSize()
-  const allList = useMyList().filter(l => l.id != listId)
+  const allList = useMyList().filter(l => l.id != listId && l.id != LIST_IDS.HISTORY)
   const itemWidth = useMemo(() => {
     let w = Math.floor(windowSize.width * 0.9 - PADDING)
     let n = Math.floor(w / MIN_WIDTH)

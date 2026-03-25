@@ -12,6 +12,7 @@ import type { InitState } from '@/store/common/state'
 import { exitApp, setNavActiveId } from '@/core/common'
 import Text from '@/components/common/Text'
 import { useSettingValue } from '@/store/setting/hook'
+import { getHistoryListName } from '@/core/history'
 
 const styles = createStyle({
   container: {
@@ -80,19 +81,20 @@ const MenuItem = ({ id, icon, onPress }: {
   const t = useI18n()
   const activeId = useNavActiveId()
   const theme = useTheme()
+  const label = id == 'nav_history' ? getHistoryListName() : t(id)
 
   return activeId == id
     ? <View style={styles.menuItem}>
         <View style={styles.iconContent}>
           <Icon name={icon} size={20} color={theme['c-primary-font-active']} />
         </View>
-        <Text style={styles.text} color={theme['c-primary-font']}>{t(id)}</Text>
+        <Text style={styles.text} color={theme['c-primary-font']}>{label}</Text>
       </View>
     : <TouchableOpacity style={styles.menuItem} onPress={() => { onPress(id) }}>
         <View style={styles.iconContent}>
           <Icon name={icon} size={20} color={theme['c-font-label']} />
         </View>
-        <Text style={styles.text}>{t(id)}</Text>
+        <Text style={styles.text}>{label}</Text>
       </TouchableOpacity>
 }
 

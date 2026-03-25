@@ -22,6 +22,12 @@ declare namespace LX {
       // list: LX.Music.MusicInfo[]
     }
 
+    interface MyHistoryListInfo {
+      id: 'history'
+      name: string
+      // list: LX.Music.MusicInfo[]
+    }
+
     interface MyTempListInfo {
       id: 'temp'
       name: '临时列表'
@@ -32,7 +38,7 @@ declare namespace LX {
       }
     }
 
-    type MyListInfo = MyDefaultListInfo | MyLoveListInfo | UserListInfo
+    type MyListInfo = MyDefaultListInfo | MyLoveListInfo | MyHistoryListInfo | UserListInfo
 
     interface MyAllList {
       defaultList: MyDefaultListInfo

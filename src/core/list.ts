@@ -102,6 +102,7 @@ export const overwriteList = async(listInfoFull: LX.List.MyDefaultListInfoFull |
   switch (listInfoFull.id) {
     case LIST_IDS.DEFAULT:
     case LIST_IDS.LOVE:
+    case LIST_IDS.HISTORY:
       break
 
     default:

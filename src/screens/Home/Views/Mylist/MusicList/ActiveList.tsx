@@ -6,13 +6,14 @@ import { BorderWidths } from '@/theme'
 import { useTheme } from '@/store/theme/hook'
 import { useActiveListId, useListFetching } from '@/store/list/hook'
 import listState from '@/store/list/state'
-import { createStyle } from '@/utils/tools'
 import { getListPrevSelectId } from '@/utils/data'
 import { setActiveList } from '@/core/list'
 import Text from '@/components/common/Text'
 import { LIST_IDS } from '@/config/constant'
 import Loading from '@/components/common/Loading'
 import { useSettingValue } from '@/store/setting/hook'
+import { confirmDialog, createStyle } from '@/utils/tools'
+import { clearHistoryList, getHistoryClearConfirmText, getHistoryClearLabel, getHistoryListName } from '@/core/history'
 
 export interface ActiveListProps {
   onShowSearchBar: () => void
@@ -35,6 +36,8 @@ export default forwardRef<ActiveListType, ActiveListProps>(({ onShowSearchBar, o
         return global.i18n.t('list_name_default')
       case LIST_IDS.LOVE:
         return global.i18n.t('list_name_love')
+      case LIST_IDS.HISTORY:
+        return getHistoryListName(langId)
       default:
         return listState.allList.find(l => l.id === currentListId)?.name ?? ''
     }
@@ -51,6 +54,16 @@ export default forwardRef<ActiveListType, ActiveListProps>(({ onShowSearchBar, o
   const showList = () => {
     global.app_event.changeLoveListVisible(true)
   }
+  const handleClearHistory = () => {
+    void confirmDialog({
+      message: getHistoryClearConfirmText(langId),
+      confirmButtonText: global.i18n.t('confirm_button_text'),
+      cancelButtonText: global.i18n.t('dialog_cancel'),
+    }).then(confirmed => {
+      if (!confirmed) return
+      void clearHistoryList()
+    })
+  }
 
   useEffect(() => {
     void getListPrevSelectId().then((id) => {
@@ -63,6 +76,15 @@ export default forwardRef<ActiveListType, ActiveListProps>(({ onShowSearchBar, o
       <Icon style={styles.currentListIcon} color={theme['c-button-font']} name="chevron-right" size={12} />
       { fetching ? <Loading color={theme['c-button-font']} style={styles.loading} /> : null }
       <Text style={styles.currentListText} numberOfLines={1} color={theme['c-button-font']}>{currentListName}</Text>
+      {
+        currentListId == LIST_IDS.HISTORY
+          ? (
+            <TouchableOpacity style={styles.currentListActionBtn} onPress={handleClearHistory}>
+              <Text numberOfLines={1} size={13} color={theme['c-button-font']}>{getHistoryClearLabel(langId)}</Text>
+            </TouchableOpacity>
+            )
+          : null
+      }
       <TouchableOpacity style={styles.currentListBtns} onPress={onShowSearchBar}>
         <Icon color={theme['c-button-font']} name="search-2" />
       </TouchableOpacity>
@@ -103,5 +125,13 @@ const styles = createStyle({
     alignItems: 'center',
     height: '100%',
     // backgroundColor: 'rgba(0,0,0,0.2)',
+  },
+  currentListActionBtn: {
+    minWidth: 46,
+    maxWidth: 70,
+    paddingHorizontal: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
   },
 })

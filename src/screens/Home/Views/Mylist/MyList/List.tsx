@@ -6,7 +6,7 @@ import { Icon } from '@/components/common/Icon'
 import { useTheme } from '@/store/theme/hook'
 import { useActiveListId, useListFetching, useMyList } from '@/store/list/hook'
 import { createStyle } from '@/utils/tools'
-import { LIST_SCROLL_POSITION_KEY } from '@/config/constant'
+import { LIST_IDS, LIST_SCROLL_POSITION_KEY } from '@/config/constant'
 import { getListPosition, saveListPosition } from '@/utils/data'
 import { setActiveList } from '@/core/list'
 import Text from '@/components/common/Text'
@@ -74,7 +74,7 @@ export default ({ onShowMenu }: {
   onShowMenu: (info: { listInfo: LX.List.MyListInfo, index: number }, position: Position) => void
 }) => {
   const flatListRef = useRef<FlatList>(null)
-  const allList = useMyList()
+  const allList = useMyList().filter(list => list.id !== LIST_IDS.HISTORY)
   const activeListId = useActiveListId()
 
   const handleToggleList = (item: LX.List.MyListInfo) => {

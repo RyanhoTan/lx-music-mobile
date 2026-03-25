@@ -3,6 +3,7 @@ import { View } from 'react-native'
 import Search from '../Views/Search'
 import SongList from '../Views/SongList'
 import Mylist from '../Views/Mylist'
+import History from '../Views/History'
 import Leaderboard from '../Views/Leaderboard'
 import Setting from '../Views/Setting'
 import commonState, { type InitState as CommonState } from '@/store/common/state'
@@ -158,6 +159,24 @@ const MylistPage = () => {
 
   return visible ? component : null
 }
+const HistoryPage = () => {
+  const [visible, setVisible] = useState(commonState.navActiveId == 'nav_history')
+  const component = useMemo(() => <History />, [])
+  useEffect(() => {
+    const handleNavIdUpdate = (id: CommonState['navActiveId']) => {
+      requestAnimationFrame(() => {
+        setVisible(id == 'nav_history')
+      })
+    }
+    global.state_event.on('navActiveIdUpdated', handleNavIdUpdate)
+
+    return () => {
+      global.state_event.off('navActiveIdUpdated', handleNavIdUpdate)
+    }
+  }, [])
+
+  return visible ? component : null
+}
 const SettingPage = () => {
   const [visible, setVisible] = useState(commonState.navActiveId == 'nav_setting')
   const component = useMemo(() => <Setting />, [])
@@ -183,13 +202,15 @@ const viewMap = {
   nav_songlist: 1,
   nav_top: 2,
   nav_love: 3,
-  nav_setting: 4,
+  nav_history: 4,
+  nav_setting: 5,
 }
 const indexMap = [
   'nav_search',
   'nav_songlist',
   'nav_top',
   'nav_love',
+  'nav_history',
   'nav_setting',
 ] as const
 
@@ -285,6 +306,9 @@ const Main = () => {
       </View>
       <View collapsable={false} key="nav_love" style={styles.pageStyle}>
         <MylistPage />
+      </View>
+      <View collapsable={false} key="nav_history" style={styles.pageStyle}>
+        <HistoryPage />
       </View>
       <View collapsable={false} key="nav_setting" style={styles.pageStyle}>
         <SettingPage />
