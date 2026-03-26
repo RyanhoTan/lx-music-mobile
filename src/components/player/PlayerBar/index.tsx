@@ -183,7 +183,6 @@ const styles = createStyle({
     paddingLeft: 14,
     paddingRight: 14,
     borderRadius: 20,
-    borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
     overflow: 'hidden',
