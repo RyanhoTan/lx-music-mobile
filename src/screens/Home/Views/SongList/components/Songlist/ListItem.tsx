@@ -1,3 +1,4 @@
+// 歌单列表项
 import { memo } from 'react'
 import { View, Platform, TouchableOpacity } from 'react-native'
 import { createStyle } from '@/utils/tools'
@@ -18,6 +19,7 @@ export default memo(({ item, index, width, showSource, onPress }: {
 }) => {
   const theme = useTheme()
   const itemWidth = width - gap
+  const surfaceTone = theme.isDark ? styles.surfaceDark : styles.surfaceLight
   const handlePress = () => {
     onPress(item, index)
   }
@@ -25,15 +27,17 @@ export default memo(({ item, index, width, showSource, onPress }: {
     item.source
       ? (
           <View style={{ ...styles.listItem, width: itemWidth }}>
-            <View style={{ ...styles.listItemImg, backgroundColor: theme['c-content-background'] }}>
+            <View style={[styles.surface, surfaceTone]}>
+              <View style={{ ...styles.listItemImg, backgroundColor: theme['c-content-background'] }}>
+                <TouchableOpacity activeOpacity={0.5} onPress={handlePress}>
+                  <Image url={item.img} nativeID={`${NAV_SHEAR_NATIVE_IDS.songlistDetail_pic}_from_${item.id}`} style={styles.image} />
+                  { showSource ? <Text style={styles.sourceLabel} size={9} color="#fff" >{item.source}</Text> : null }
+                </TouchableOpacity>
+              </View>
               <TouchableOpacity activeOpacity={0.5} onPress={handlePress}>
-                <Image url={item.img} nativeID={`${NAV_SHEAR_NATIVE_IDS.songlistDetail_pic}_from_${item.id}`} style={{ width: itemWidth, height: itemWidth, borderRadius: 4 }} />
-                { showSource ? <Text style={styles.sourceLabel} size={9} color="#fff" >{item.source}</Text> : null }
+                <Text style={styles.listItemTitle} numberOfLines={ 2 }>{item.name}</Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity activeOpacity={0.5} onPress={handlePress}>
-              <Text style={styles.listItemTitle} numberOfLines={ 2 }>{item.name}</Text>
-            </TouchableOpacity>
             {/* <Text>{JSON.stringify(item)}</Text> */}
           </View>
         )
@@ -43,13 +47,32 @@ export default memo(({ item, index, width, showSource, onPress }: {
 
 const styles = createStyle({
   listItem: {
-    // width: 90,
     margin: 10,
   },
+  surface: {
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowRadius: 18,
+  },
+  surfaceDark: {
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderColor: 'rgba(255,255,255,0.08)',
+    shadowOpacity: 0.12,
+  },
+  surfaceLight: {
+    backgroundColor: 'rgba(255,255,255,0.26)',
+    borderColor: 'rgba(255,255,255,0.22)',
+    shadowOpacity: 0.06,
+  },
   listItemImg: {
-    // backgroundColor: '#eee',
-    borderRadius: 4,
-    marginBottom: 5,
+    borderRadius: 12,
+    marginBottom: 10,
     overflow: 'hidden',
     ...Platform.select({
       ios: {
@@ -58,13 +81,18 @@ const styles = createStyle({
           width: 0,
           height: 1,
         },
-        shadowOpacity: 0.20,
-        shadowRadius: 1.41,
+        shadowOpacity: 0.12,
+        shadowRadius: 4,
       },
       android: {
-        elevation: 2,
+        elevation: 1,
       },
     }),
+  },
+  image: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 12,
   },
   sourceLabel: {
     paddingLeft: 4,
@@ -78,7 +106,6 @@ const styles = createStyle({
   },
   listItemTitle: {
     fontSize: 12,
-    // overflow: 'hidden',
-    marginBottom: 5,
+    marginBottom: 2,
   },
 })

@@ -1,3 +1,4 @@
+// 歌曲列表项
 import { memo, useRef } from 'react'
 import { View, TouchableOpacity } from 'react-native'
 // import Button from '@/components/common/Button'
@@ -44,6 +45,9 @@ export default memo(({ item, index, showSource, onPress, onLongPress, onShowMenu
   const theme = useTheme()
 
   const isSelected = selectedList.includes(item)
+  const surfaceTone = isSelected
+    ? theme.isDark ? styles.surfaceSelectedDark : styles.surfaceSelectedLight
+    : theme.isDark ? styles.surfaceDark : styles.surfaceLight
 
   const moreButtonRef = useRef<TouchableOpacity>(null)
   const handleShowMenu = () => {
@@ -59,26 +63,28 @@ export default memo(({ item, index, showSource, onPress, onLongPress, onShowMenu
   const singer = `${item.singer}${isShowAlbumName && item.meta.albumName ? ` · ${item.meta.albumName}` : ''}`
 
   return (
-    <View style={{ ...styles.listItem, width: rowInfo.rowWidth, height: ITEM_HEIGHT, backgroundColor: isSelected ? theme['c-primary-background-hover'] : 'rgba(0,0,0,0)' }}>
-      <TouchableOpacity style={styles.listItemLeft} onPress={() => { onPress(item, index) }} onLongPress={() => { onLongPress(item, index) }}>
-        <Text style={styles.sn} size={13} color={theme['c-300']}>{index + 1}</Text>
-        <View style={styles.itemInfo}>
-          <Text numberOfLines={1}>{item.name}</Text>
-          <View style={styles.listItemSingle}>
-            { tagInfo.type ? <Badge type={tagInfo.type}>{tagInfo.text}</Badge> : null }
-            { showSource ? <Badge type="tertiary">{item.source}</Badge> : null }
-            <Text style={styles.listItemSingleText} size={11} color={theme['c-500']} numberOfLines={1}>{singer}</Text>
+    <View style={{ ...styles.listItem, width: rowInfo.rowWidth, height: ITEM_HEIGHT }}>
+      <View style={[styles.surface, surfaceTone]}>
+        <TouchableOpacity style={styles.listItemLeft} onPress={() => { onPress(item, index) }} onLongPress={() => { onLongPress(item, index) }}>
+          <Text style={styles.sn} size={13} color={theme['c-300']}>{index + 1}</Text>
+          <View style={styles.itemInfo}>
+            <Text numberOfLines={1}>{item.name}</Text>
+            <View style={styles.listItemSingle}>
+              { tagInfo.type ? <Badge type={tagInfo.type}>{tagInfo.text}</Badge> : null }
+              { showSource ? <Badge type="tertiary">{item.source}</Badge> : null }
+              <Text style={styles.listItemSingleText} size={11} color={theme['c-500']} numberOfLines={1}>{singer}</Text>
+            </View>
           </View>
-        </View>
-        {
-          isShowInterval ? (
-            <Text size={12} color={theme['c-250']} numberOfLines={1}>{item.interval}</Text>
-          ) : null
-        }
-      </TouchableOpacity>
-     <TouchableOpacity onPress={handleShowMenu} ref={moreButtonRef} style={styles.moreButton}>
-        <Icon name="dots-vertical" style={{ color: theme['c-350'] }} size={12} />
-      </TouchableOpacity>
+          {
+            isShowInterval ? (
+              <Text size={12} color={theme['c-250']} numberOfLines={1}>{item.interval}</Text>
+            ) : null
+          }
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleShowMenu} ref={moreButtonRef} style={styles.moreButton}>
+          <Icon name="dots-vertical" style={{ color: theme['c-350'] }} size={12} />
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }, (prevProps, nextProps) => {
@@ -92,13 +98,45 @@ export default memo(({ item, index, showSource, onPress, onLongPress, onShowMenu
 
 const styles = createStyle({
   listItem: {
-    // width: '100%',
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingTop: 4,
+    paddingBottom: 4,
+  },
+  surface: {
+    flex: 1,
     flexDirection: 'row',
     flexWrap: 'nowrap',
-    // paddingLeft: 10,
-    paddingRight: 2,
     alignItems: 'center',
-    // borderBottomWidth: BorderWidths.normal,
+    borderRadius: 16,
+    borderWidth: 1,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowRadius: 18,
+  },
+  surfaceDark: {
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderColor: 'rgba(255,255,255,0.08)',
+    shadowOpacity: 0.12,
+  },
+  surfaceLight: {
+    backgroundColor: 'rgba(255,255,255,0.26)',
+    borderColor: 'rgba(255,255,255,0.22)',
+    shadowOpacity: 0.06,
+  },
+  surfaceSelectedDark: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.14)',
+    shadowOpacity: 0.16,
+  },
+  surfaceSelectedLight: {
+    backgroundColor: 'rgba(255,255,255,0.36)',
+    borderColor: 'rgba(255,255,255,0.28)',
+    shadowOpacity: 0.1,
   },
   listItemLeft: {
     flex: 1,
@@ -159,12 +197,9 @@ const styles = createStyle({
     justifyContent: 'center',
   },
   moreButton: {
-    height: '80%',
+    height: '100%',
     paddingLeft: 16,
     paddingRight: 16,
-    // paddingTop: 10,
-    // paddingBottom: 10,
-    // backgroundColor: 'rgba(0,0,0,0.2)',
     justifyContent: 'center',
   },
 })
