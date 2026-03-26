@@ -3,7 +3,6 @@ import { navigations } from '@/navigation'
 import { usePlayerMusicInfo } from '@/store/player/hook'
 // import { toast } from '@/utils/tools'
 import { useSettingValue } from '@/store/setting/hook'
-import { useTheme } from '@/store/theme/hook'
 import commonState from '@/store/common/state'
 import playerState from '@/store/player/state'
 import Text from '@/components/common/Text'
@@ -11,11 +10,10 @@ import { LIST_IDS } from '@/config/constant'
 import { createStyle } from '@/utils/tools'
 
 
-export default ({ isHome }: { isHome: boolean }) => {
+export default ({ isHome, color }: { isHome: boolean, color: string }) => {
   // const { t } = useTranslation()
   const musicInfo = usePlayerMusicInfo()
   const downloadFileName = useSettingValue('download.fileName')
-  const theme = useTheme()
 
   const handlePress = () => {
     // console.log('')
@@ -40,7 +38,7 @@ export default ({ isHome }: { isHome: boolean }) => {
   // console.log(playMusicInfo)
   return (
     <TouchableOpacity style={styles.container} onLongPress={handleLongPress} onPress={handlePress} activeOpacity={0.7} >
-      <Text color={theme['c-font-label']} numberOfLines={1}>{title}</Text>
+      <Text size={15} color={color} numberOfLines={1} style={styles.title}>{title}</Text>
     </TouchableOpacity>
   )
 }
@@ -68,9 +66,10 @@ export default ({ isHome }: { isHome: boolean }) => {
 const styles = createStyle({
   container: {
     width: '100%',
-    paddingHorizontal: 2,
-    // paddingBottom: 4,
-    // height: '50%',
-    // backgroundColor: 'rgba(0, 0, 0, .1)',
+    paddingBottom: 6,
+  },
+  title: {
+    fontWeight: '600',
+    letterSpacing: 0.2,
   },
 })

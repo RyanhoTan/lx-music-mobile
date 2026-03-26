@@ -6,6 +6,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
@@ -29,6 +32,10 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -302,6 +309,109 @@ public class UtilsModule extends ReactContextBaseJavaModule {
     }
 
     promise.resolve(localeStr);
+  }
+
+  @ReactMethod
+  public void getImageAverageBrightness(String imageUri, Promise promise) {
+    new Thread(() -> {
+      Bitmap bitmap = null;
+      try {
+        bitmap = loadSampledBitmap(imageUri, 72, 72);
+        if (bitmap == null) {
+          promise.resolve(null);
+          return;
+        }
+        promise.resolve(calculateBitmapBrightness(bitmap));
+      } catch (Exception e) {
+        promise.reject("Utils", "getImageAverageBrightness failed", e);
+      } finally {
+        if (bitmap != null && !bitmap.isRecycled()) {
+          bitmap.recycle();
+        }
+      }
+    }).start();
+  }
+
+  private Bitmap loadSampledBitmap(String imageUri, int reqWidth, int reqHeight) throws IOException {
+    BitmapFactory.Options boundsOptions = new BitmapFactory.Options();
+    boundsOptions.inJustDecodeBounds = true;
+    try (InputStream stream = openImageStream(imageUri)) {
+      BitmapFactory.decodeStream(stream, null, boundsOptions);
+    }
+
+    BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
+    decodeOptions.inSampleSize = calculateInSampleSize(boundsOptions, reqWidth, reqHeight);
+    decodeOptions.inPreferredConfig = Bitmap.Config.RGB_565;
+
+    try (InputStream stream = openImageStream(imageUri)) {
+      return BitmapFactory.decodeStream(stream, null, decodeOptions);
+    }
+  }
+
+  private InputStream openImageStream(String imageUri) throws IOException {
+    Uri uri = Uri.parse(imageUri);
+    String scheme = uri.getScheme();
+
+    if (scheme == null || scheme.isEmpty()) {
+      return new FileInputStream(imageUri);
+    }
+
+    switch (scheme) {
+      case "content":
+      case "file":
+        InputStream inputStream = reactContext.getContentResolver().openInputStream(uri);
+        if (inputStream == null) {
+          throw new IOException("Unable to open image uri: " + imageUri);
+        }
+        return inputStream;
+      case "http":
+      case "https":
+        return new URL(imageUri).openStream();
+      default:
+        return new FileInputStream(imageUri);
+    }
+  }
+
+  private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    int height = options.outHeight;
+    int width = options.outWidth;
+    int inSampleSize = 1;
+
+    if (height <= 0 || width <= 0) {
+      return inSampleSize;
+    }
+
+    while ((height / inSampleSize) > reqHeight || (width / inSampleSize) > reqWidth) {
+      inSampleSize *= 2;
+    }
+
+    return Math.max(inSampleSize, 1);
+  }
+
+  private double calculateBitmapBrightness(Bitmap bitmap) {
+    int width = bitmap.getWidth();
+    int height = bitmap.getHeight();
+    int stepX = Math.max(1, width / 24);
+    int stepY = Math.max(1, height / 24);
+    long luminanceSum = 0;
+    long sampleCount = 0;
+
+    for (int y = 0; y < height; y += stepY) {
+      for (int x = 0; x < width; x += stepX) {
+        int color = bitmap.getPixel(x, y);
+        if (Color.alpha(color) < 32) {
+          continue;
+        }
+        luminanceSum += Color.red(color) * 299L + Color.green(color) * 587L + Color.blue(color) * 114L;
+        sampleCount += 1000L;
+      }
+    }
+
+    if (sampleCount == 0) {
+      return 0.5d;
+    }
+
+    return (double) luminanceSum / (sampleCount * 255d);
   }
 
   // https://github.com/Anthonyzou/react-native-full-screen/blob/master/android/src/main/java/com/rn/full/screen/FullScreen.java
