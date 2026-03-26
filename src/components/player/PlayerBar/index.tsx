@@ -204,7 +204,7 @@ const styles = createStyle({
     left: 0,
   },
   blurBackgroundImage: {
-    opacity: 0.88,
+    opacity: 0.98,
   },
   blurOverlay: {
     flex: 1,

@@ -21,7 +21,7 @@ const getHistoryTextMap = () => ({
 } as const)
 
 const getLocaleValue = (values: Record<string, string>, langId?: string | null) => {
-  const currentLangId = langId ?? global.i18n.locale
+  const currentLangId = langId ?? global.i18n?.locale ?? 'zh_cn'
   return values[currentLangId] ?? values.default
 }
 

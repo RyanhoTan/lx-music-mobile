@@ -10,13 +10,14 @@ import { scaleSizeW } from '@/utils/pixelRatio'
 
 const MAX_WIDTH = scaleSizeW(300)
 
-const Content = () => {
+const Content = ({ onMenuVisibleChange }: { onMenuVisibleChange?: (visible: boolean) => void }) => {
   const drawer = useRef<DrawerLayoutFixedType>(null)
   const drawerLayoutPosition = useSettingValue('common.drawerLayoutPosition')
 
   useEffect(() => {
     const changeVisible = (visible: boolean) => {
       if (visible) {
+        onMenuVisibleChange?.(true)
         drawer.current?.openDrawer()
       } else {
         drawer.current?.closeDrawer()
@@ -28,7 +29,7 @@ const Content = () => {
     return () => {
       global.app_event.off('changeMenuVisible', changeVisible)
     }
-  }, [])
+  }, [onMenuVisibleChange])
 
   const navigationView = () => <DrawerNav />
   // console.log('render drawer content')
@@ -41,6 +42,9 @@ const Content = () => {
       visibleNavNames={[COMPONENT_IDS.home]}
       // drawerWidth={width}
       drawerPosition={drawerLayoutPosition}
+      drawerBackgroundColor="transparent"
+      onDrawerOpen={() => { onMenuVisibleChange?.(true) }}
+      onDrawerClose={() => { onMenuVisibleChange?.(false) }}
       renderNavigationView={navigationView}
     >
       <Header />
