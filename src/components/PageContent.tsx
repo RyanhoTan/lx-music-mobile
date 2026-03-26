@@ -1,3 +1,4 @@
+// 通用页面背景
 // import { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { useTheme } from '@/store/theme/hook'
@@ -8,6 +9,7 @@ import { scaleSizeAbsHR } from '@/utils/pixelRatio'
 import { defaultHeaders } from './common/Image'
 import SizeView from './SizeView'
 import { useBgPic } from '@/store/common/hook'
+import { usePlayerMusicInfo } from '@/store/player/hook'
 
 interface Props {
   children: React.ReactNode
@@ -19,6 +21,18 @@ export default ({ children }: Props) => {
   const theme = useTheme()
   const windowSize = useWindowSize()
   const pic = useBgPic()
+  const musicInfo = usePlayerMusicInfo()
+  const backgroundSource = useMemo(() => {
+    if (pic) {
+      return { uri: pic, headers: defaultHeaders }
+    }
+    if (!musicInfo.pic) return null
+    if (typeof musicInfo.pic == 'number') return musicInfo.pic
+    const uri = musicInfo.pic.startsWith('/') ? `file://${musicInfo.pic}` : musicInfo.pic
+    return uri.startsWith('http://') || uri.startsWith('https://')
+      ? { uri, headers: defaultHeaders }
+      : { uri }
+  }, [musicInfo.pic, pic])
   // const [wh, setWH] = useState<{ width: number | string, height: number | string }>({ width: '100%', height: Dimensions.get('screen').height })
 
   // 固定宽高度 防止弹窗键盘时大小改变导致背景被缩放
@@ -52,12 +66,12 @@ export default ({ children }: Props) => {
       </View>
     </View>
   ), [children, theme, windowSize.height, windowSize.width])
-  const picComponent = useMemo(() => {
+  const blurBackgroundComponent = useMemo(() => {
     return (
       <View style={{ flex: 1, overflow: 'hidden' }}>
         <ImageBackground
           style={{ position: 'absolute', left: 0, top: 0, height: windowSize.height, width: windowSize.width, backgroundColor: theme['c-content-background'] }}
-          source={{ uri: pic!, headers: defaultHeaders }}
+          source={backgroundSource}
           resizeMode="cover"
           blurRadius={BLUR_RADIUS}
         >
@@ -68,12 +82,12 @@ export default ({ children }: Props) => {
         </View>
       </View>
     )
-  }, [children, pic, theme, windowSize.height, windowSize.width])
+  }, [backgroundSource, children, theme, windowSize.height, windowSize.width])
 
   return (
     <>
       <SizeView />
-      {pic ? picComponent : themeComponent}
+      {backgroundSource ? blurBackgroundComponent : themeComponent}
     </>
   )
 }
