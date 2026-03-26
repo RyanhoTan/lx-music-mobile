@@ -36,8 +36,7 @@ const styles = createStyle({
   },
   clearBtn: {
     height: '70%',
-    paddingLeft: 5,
-    paddingRight: 5,
+    paddingRight: 12,
     justifyContent: 'center',
     // backgroundColor: 'rgba(0,0,0,0.2)',
   },
