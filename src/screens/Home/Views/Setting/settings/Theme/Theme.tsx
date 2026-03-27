@@ -12,6 +12,7 @@ import { createStyle } from '@/utils/tools'
 import { scaleSizeH } from '@/utils/pixelRatio'
 import { Icon } from '@/components/common/Icon'
 import ImageBackground from '@/components/common/ImageBackground'
+import IsDynamicBg from './IsDynamicBg'
 
 const useActive = (id: string) => {
   const activeThemeId = useSettingValue('theme.id')
@@ -89,33 +90,36 @@ export default memo(() => {
 
   return (
     <SubTitle title={t('setting_basic_theme')}>
-      <View style={styles.list}>
-        {
-          themeInfo.themes.map(({ id, config }) => {
-            return <ThemeItem
-              key={id}
-              color={config.themeColors['c-theme']}
-              image={config.extInfo['bg-image'] ? BG_IMAGES[config.extInfo['bg-image']] : undefined}
-              showAll={showAll}
-              id={id}
-              name={t(`theme_${id}`)}
-              setTheme={setThemeId} />
-          })
-        }
-        {
-          themeInfo.userThemes.map(({ id, name, config }) => {
-            return <ThemeItem
-              key={id}
-              color={config.themeColors['c-theme']}
-              // image={undefined}
-              showAll={showAll}
-              id={id}
-              name={name}
-              setTheme={setThemeId} />
-          })
-        }
-        <MoreBtn showAll={showAll} setShowAll={setShowAll} />
-      </View>
+      <>
+        <View style={styles.list}>
+          {
+            themeInfo.themes.map(({ id, config }) => {
+              return <ThemeItem
+                key={id}
+                color={config.themeColors['c-theme']}
+                image={config.extInfo['bg-image'] ? BG_IMAGES[config.extInfo['bg-image']] : undefined}
+                showAll={showAll}
+                id={id}
+                name={t(`theme_${id}`)}
+                setTheme={setThemeId} />
+            })
+          }
+          {
+            themeInfo.userThemes.map(({ id, name, config }) => {
+              return <ThemeItem
+                key={id}
+                color={config.themeColors['c-theme']}
+                // image={undefined}
+                showAll={showAll}
+                id={id}
+                name={name}
+                setTheme={setThemeId} />
+            })
+          }
+          <MoreBtn showAll={showAll} setShowAll={setShowAll} />
+        </View>
+        <IsDynamicBg />
+      </>
     </SubTitle>
   )
 })

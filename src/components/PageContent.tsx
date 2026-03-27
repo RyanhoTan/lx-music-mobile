@@ -10,6 +10,7 @@ import { defaultHeaders } from './common/Image'
 import SizeView from './SizeView'
 import { useBgPic } from '@/store/common/hook'
 import { usePlayerMusicInfo } from '@/store/player/hook'
+import { useSettingValue } from '@/store/setting/hook'
 
 interface Props {
   children: React.ReactNode
@@ -22,7 +23,9 @@ export default ({ children }: Props) => {
   const windowSize = useWindowSize()
   const pic = useBgPic()
   const musicInfo = usePlayerMusicInfo()
+  const isDynamicBg = useSettingValue('theme.dynamicBg')
   const backgroundSource = useMemo(() => {
+    if (!isDynamicBg) return null
     if (pic) {
       return { uri: pic, headers: defaultHeaders }
     }
@@ -32,7 +35,7 @@ export default ({ children }: Props) => {
     return uri.startsWith('http://') || uri.startsWith('https://')
       ? { uri, headers: defaultHeaders }
       : { uri }
-  }, [musicInfo.pic, pic])
+  }, [isDynamicBg, musicInfo.pic, pic])
   // const [wh, setWH] = useState<{ width: number | string, height: number | string }>({ width: '100%', height: Dimensions.get('screen').height })
 
   // 固定宽高度 防止弹窗键盘时大小改变导致背景被缩放
