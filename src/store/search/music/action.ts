@@ -11,6 +11,15 @@ export interface SearchResult {
   source: LX.OnlineSource
 }
 
+const emitSearchMusicInfoChanged = () => {
+  global.state_event.searchMusicInfoChanged({
+    ...state,
+    listInfos: { ...state.listInfos },
+    maxPages: { ...state.maxPages },
+    sources: [...state.sources],
+  })
+}
+
 
 /**
  * 按搜索关键词重新排序列表
@@ -76,15 +85,21 @@ const setList = (datas: SearchResult, page: number, text: string): LX.Music.Musi
 export default {
   setSource(source: InitState['source']) {
     state.source = source
+    emitSearchMusicInfoChanged()
   },
   setSearchText(searchText: InitState['searchText']) {
     state.searchText = searchText
+    emitSearchMusicInfoChanged()
   },
   setListInfo(result: SearchResult | SearchResult[], page: number, text: string) {
     if (Array.isArray(result)) {
-      return setLists(result, page, text)
+      const list = setLists(result, page, text)
+      emitSearchMusicInfoChanged()
+      return list
     } else {
-      return setList(result, page, text)
+      const list = setList(result, page, text)
+      emitSearchMusicInfoChanged()
+      return list
     }
   },
   clearListInfo(sourceId: Source) {
@@ -93,5 +108,6 @@ export default {
     listInfo.page = 0
     listInfo.maxPage = 0
     listInfo.total = 0
+    emitSearchMusicInfoChanged()
   },
 }

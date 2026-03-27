@@ -17,6 +17,16 @@ export const handlePlay = (musicInfo: LX.Music.MusicInfoOnline) => {
     void playList(LIST_IDS.DEFAULT, index)
   })
 }
+export const handlePlayList = (musicInfos: LX.Music.MusicInfoOnline[]) => {
+  if (!musicInfos.length) return
+  void addListMusics(LIST_IDS.DEFAULT, musicInfos, settingState.setting['list.addMusicLocationType']).then(() => {
+    const index = getListMusicSync(LIST_IDS.DEFAULT).findIndex(m => m.id == musicInfos[0].id)
+    if (index < 0) return
+    void playList(LIST_IDS.DEFAULT, index)
+  }).catch((err) => {
+    console.log(err)
+  })
+}
 export const handlePlayLater = (musicInfo: LX.Music.MusicInfoOnline, selectedList: LX.Music.MusicInfoOnline[], onCancelSelect: () => void) => {
   if (selectedList.length) {
     addTempPlayList(selectedList.map(s => ({ listId: '', musicInfo: s })))

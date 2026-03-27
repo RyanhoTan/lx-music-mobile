@@ -44,10 +44,16 @@ export const search = async(text: string, page: number, sourceId: Source): Promi
       return setListInfo(results, page, text)
     })
   } else {
-    if (listInfo?.key == key && listInfo?.list.length) return listInfo?.list
+    if (listInfo?.key == key && listInfo?.list.length) {
+      setSearchText(text)
+      setSource(sourceId)
+      return listInfo?.list
+    }
     listInfo.key = key
     return (musicSdk[sourceId]?.musicSearch.search(text, page, listInfo.limit).then((data: SearchResult) => {
       if (key != listInfo.key) return []
+      setSearchText(text)
+      setSource(sourceId)
       return setListInfo(data, page, text)
     }) ?? Promise.reject(new Error('source not found: ' + sourceId))).catch((err: any) => {
       if (listInfo.list.length && page == 1) clearListInfo(sourceId)
