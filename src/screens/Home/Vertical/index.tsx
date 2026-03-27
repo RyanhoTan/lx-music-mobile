@@ -4,8 +4,8 @@ import Content from './Content'
 import PlayerBar from '@/components/player/PlayerBar'
 import { createStyle } from '@/utils/tools'
 
-const HIDE_OFFSET = 132
-const ANIMATION_DURATION = 240
+const HIDE_OFFSET = 32
+const ANIMATION_DURATION = 220
 
 const styles = createStyle({
   playerBarLayer: {
@@ -19,60 +19,41 @@ const styles = createStyle({
 
 export default () => {
   const [menuVisible, setMenuVisible] = useState(false)
-  const [showPlayerBar, setShowPlayerBar] = useState(true)
   const translateY = useRef(new Animated.Value(0)).current
-  const isFirstRender = useRef(true)
+  const opacity = useRef(new Animated.Value(1)).current
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false
-      return
-    }
-
-    if (menuVisible) {
+    Animated.parallel([
       Animated.timing(translateY, {
-        toValue: HIDE_OFFSET,
+        toValue: menuVisible ? HIDE_OFFSET : 0,
         duration: ANIMATION_DURATION,
-        easing: Easing.in(Easing.cubic),
+        easing: Easing.inOut(Easing.cubic),
         useNativeDriver: true,
-      }).start(({ finished }) => {
-        if (finished) setShowPlayerBar(false)
-      })
-      return
-    }
-
-    setShowPlayerBar(true)
-    translateY.setValue(HIDE_OFFSET)
-    requestAnimationFrame(() => {
-      Animated.timing(translateY, {
-        toValue: 0,
-        duration: ANIMATION_DURATION,
-        easing: Easing.out(Easing.cubic),
+      }),
+      Animated.timing(opacity, {
+        toValue: menuVisible ? 0 : 1,
+        duration: ANIMATION_DURATION - 20,
+        easing: Easing.inOut(Easing.cubic),
         useNativeDriver: true,
-      }).start()
-    })
-  }, [menuVisible, translateY])
+      }),
+    ]).start()
+  }, [menuVisible, opacity, translateY])
 
   return (
     <>
       <Content onMenuVisibleChange={setMenuVisible} />
-      {
-        showPlayerBar
-          ? (
-            <Animated.View
-              pointerEvents={menuVisible ? 'none' : 'box-none'}
-              style={[
-                styles.playerBarLayer,
-                {
-                  transform: [{ translateY }],
-                },
-              ]}
-            >
-              <PlayerBar isHome />
-            </Animated.View>
-            )
-          : null
-      }
+      <Animated.View
+        pointerEvents={menuVisible ? 'none' : 'box-none'}
+        style={[
+          styles.playerBarLayer,
+          {
+            opacity,
+            transform: [{ translateY }],
+          },
+        ]}
+      >
+        <PlayerBar isHome />
+      </Animated.View>
     </>
   )
 }
