@@ -20,8 +20,7 @@ if (process.versions == null) {
 //   screenH = temp
 // }
 
-
-global.lx = {
+const defaultLx = {
   fontSize: 1,
   playerStatus: {
     isInitialized: false,
@@ -72,8 +71,18 @@ global.lx = {
   //   screenPxH: PixelRatio.getPixelSizeForLayoutSize(screenH),
   // },
 }
+const prevLx = global.lx
 
-global.app_event = createAppEventHub()
-global.list_event = createListEventHub()
-global.dislike_event = createDislikeEventHub()
-global.state_event = createStateEventHub()
+global.lx = {
+  ...defaultLx,
+  ...prevLx,
+  playerStatus: {
+    ...defaultLx.playerStatus,
+    ...(prevLx?.playerStatus ?? {}),
+  },
+}
+
+if (!global.app_event) global.app_event = createAppEventHub()
+if (!global.list_event) global.list_event = createListEventHub()
+if (!global.dislike_event) global.dislike_event = createDislikeEventHub()
+if (!global.state_event) global.state_event = createStateEventHub()
